@@ -4,42 +4,6 @@ using Base.Test
 # write your own tests here
 @test 1 == 1
 
-import LowDimNearestNeighbors: shuffless, shuffmore, nearest, Result, sqdist, sqdist_to_quadtree_box
-
-# Nearest-neighbor search on a binary search tree containing unique
-# elements in shuffle order. Assumes the tree implements key,
-# left, right, isempty, minimum, and maximum.
-# The code follows the shape of the array version.
-function nearest{P, Q}(t::TreapNode{P}, q::Q, R::Result{P, Q}, ε::Float64)
-	isempty(t) && return R
-
-	min, cur, max = minimum(t), key(t), maximum(t)
-
-	r_sq = sqdist(cur, q)
-	r_sq < R.r_sq && (R = Result{P, Q}(cur, r_sq, q))
-
-	if min == max || sqdist_to_quadtree_box(q, min, max) * (1.0 + ε)^2 >= R.r_sq
-		return R
-	end
-
-	if shuffless(q, cur)
-		R = nearest(left(t), q, R, ε)
-		shuffmore(R.bbox_hi, cur) && (R = nearest(right(t), q, R, ε))
-	else
-		R = nearest(right(t), q, R, ε)
-		shuffless(R.bbox_lo, cur) && (R = nearest(left(t), q, R, ε))
-	end
-
-	R
-end
-
-function nearest{P, Q}(t::TreapNode{P}, q::Q, ε=0.0)
-	@assert !isempty(t) "Searching for the nearest in an empty treap"
-	nearest(t, q, Result{P, Q}(key(t)), ε).point
-end
-
-nearest{P, Q}(t::Treap{P}, q::Q, ε=0.0) = nearest(root(t), q, ε)
-
 function test_treap()
 	n = 10000
 	a = shuffle([i for i in 1:n])

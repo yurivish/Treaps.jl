@@ -94,12 +94,11 @@ type Treap{K}
 	root::TreapNode{K}
 	Treap() = new(TreapNode{K}())
 end
-show(io::IO, t::Treap) = show(io, t.root)
-isempty(t::Treap) = isempty(t.root)
 add!{K}(t::Treap{K}, key::K) = t.root = add!(t.root, key)
 remove!{K}(t::Treap{K}, key::K) = t.root = remove!(t.root, key)
+show(io::IO, t::Treap) = show(io, t.root)
+isempty(t::Treap) = isempty(t.root)
 length(t::Treap) = length(t.root)
-getindex(t::Treap, n::Int) = getindex(t.root, n)
 minimum(t::Treap) = minimum(t.root)
 maximum(t::Treap) = maximum(t.root)
 left(t::Treap) = left(t.root)
