@@ -106,4 +106,7 @@ right(t::Treap) = right(t.root)
 key(t::Treap) = key(t.root)
 root(t::Treap) = t.root
 
+include("nearest.jl")
+
 end # module
+
