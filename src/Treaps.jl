@@ -1,6 +1,6 @@
 module Treaps
 
-import Base: show, isempty, minimum, maximum
+import Base: show, isempty, minimum, maximum, in
 
 export Treap, TreapNode, show, isempty, add!, remove!, minimum, maximum, left, right, key, root
 
@@ -65,6 +65,17 @@ function remove!{K}(t::TreapNode{K}, key::K)
 	end
 end
 
+function in{K}(key::K, t::TreapNode{K})
+	isempty(t) && return false
+	if key == t.key
+		true
+	elseif key < t.key
+		in(key, t.left)
+	else
+		in(key, t.right)
+	end
+end
+
 function minimum(t::TreapNode)
 	isempty(t) && error("An empty treap has no minimum.")
 	while !isempty(t.left) t = t.left end
@@ -105,6 +116,7 @@ left(t::Treap) = left(t.root)
 right(t::Treap) = right(t.root)
 key(t::Treap) = key(t.root)
 root(t::Treap) = t.root
+in{K}(key::K, t::Treap{K}) = in(key, t.root)
 
 include("nearest.jl")
 
