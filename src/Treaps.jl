@@ -44,7 +44,7 @@ function merge!{K}(left::TreapNode{K}, right::TreapNode{K})
 	isempty(right) && return left
 	if left.priority < right.priority
 		result = left
-		result.right = merge!(left.right, right)
+		result.right = merge!(result.right, right)
 	else
 		result = right
 		result.left = merge!(left, result.left)
