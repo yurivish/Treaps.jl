@@ -52,16 +52,35 @@ function merge!{K}(left::TreapNode{K}, right::TreapNode{K})
 	result
 end
 
+immutable Optional{T}
+	hasvalue::Bool
+	value::T
+	Optional() = new(false)
+	Optional(value::T) = new(true, value)
+end
+
+Optional{T}(value::T) = Optional{T}(value)
+
 function remove!{K}(t::TreapNode{K}, key::K)
 	isempty(t) && throw(KeyError(key))
 	if key == t.key
-		merge!(t.left, t.right)
+		Optional(merge!(t.left, t.right))
 	elseif key < t.key
-		t.left = remove!(t.left, key)
-		t.left.priority < t.priority ? rotate_right!(t) : t
+		result = remove!(t.left, key)
+		if result.hasvalue
+			t.left = result.value
+			t.left.priority < t.priority ? Optional(rotate_right!(t)) : Optional{TreapNode{K}}()
+		else
+			result
+		end
 	else
-		t.right = remove!(t.right, key)
-		t.right.priority < t.priority ? rotate_left!(t) : t
+		result = remove!(t.right, key)
+		if result.hasvalue
+			t.right = result.value
+			t.right.priority < t.priority ? Optional(rotate_left!(t)) : Optional{TreapNode{K}}()
+		else
+			result
+		end
 	end
 end
 
@@ -106,7 +125,12 @@ type Treap{K}
 	Treap() = new(TreapNode{K}())
 end
 add!{K}(t::Treap{K}, key::K) = t.root = add!(t.root, key)
-remove!{K}(t::Treap{K}, key::K) = t.root = remove!(t.root, key)
+function remove!{K}(t::Treap{K}, key::K)
+	result = remove!(t.root, key)
+	if result.hasvalue
+		t.root = result.value
+	end
+end
 show(io::IO, t::Treap) = show(io, t.root)
 isempty(t::Treap) = isempty(t.root)
 length(t::Treap) = length(t.root)
