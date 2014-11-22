@@ -5,16 +5,16 @@ import Base: show, isempty, minimum, maximum, in
 export Treap, TreapNode, show, isempty, add!, remove!, minimum, maximum, left, right, key, root
 
 type TreapNode{K}
-	priority::Float64
+	priority::Float32
 	key::K
 	left::TreapNode{K}
 	right::TreapNode{K}
 	TreapNode(key, priority, left, right) = new(priority, key, left, right)
-	TreapNode(key) = new(rand(), key, TreapNode{K}(), TreapNode{K}())
-	TreapNode() = new(Inf)
+	TreapNode(key) = new(rand(Float32), key, TreapNode{K}(), TreapNode{K}())
+	TreapNode() = new(Inf32)
 end
 show(io::IO, t::TreapNode) = show(io, "Key: $(t.key), Priority: $(t.priority)")
-isempty(t::TreapNode) = t.priority == Inf
+isempty(t::TreapNode) = t.priority == Inf32
 
 key(t::TreapNode) = t.key
 left(t::TreapNode) = t.left
@@ -23,7 +23,7 @@ right(t::TreapNode) = t.right
 function add!{K}(t::TreapNode{K}, key::K)
 	if isempty(t)
 		t.key = key
-		t.priority = rand()
+		t.priority = rand(Float32)
 		t.left = TreapNode{K}()
 		t.right = TreapNode{K}()
 		return t
