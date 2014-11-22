@@ -44,7 +44,7 @@ Base.rand{T}(::Type{Vec3{T}}) = Vec3(rand(T), rand(T), rand(T))
 <(a::Vec3, b::Vec3) = shuffless(a, b)
 
 function benchmark_treap(numelements, numqueries)
-	const check_correctness = true
+	const check_correctness = false
 
 	for i in 1:10
 		arr = unique([rand(Vec3{Uint8}) for i in 1:numelements])
