@@ -31,6 +31,7 @@ end
 
 test_treap()
 
+using LowDimNearestNeighbors
 
 immutable Vec3{T}
 	x::T
