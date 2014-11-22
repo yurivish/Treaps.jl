@@ -24,7 +24,22 @@ right(t::TreapNode) = t.right
 type Treap{K}
 	root::TreapNode{K}
 	pool::Vector{TreapNode{K}}
-	Treap() = new(TreapNode{K}(), TreapNode{K}[])
+	poolsize::Int
+	function Treap()
+		pool = Array(TreapNode{K}, 2000)
+		new(TreapNode{K}(), pool, 0)
+	end
+end
+
+function newnode{K}(treap::Treap{K})
+	if treap.poolsize > 0
+		node = treap.pool[treap.poolsize]
+		node.priority = inf(PriorityT)
+		treap.poolsize -= 1
+		node
+	else
+		TreapNode{K}()
+	end
 end
 
 function add!{K}(treap::Treap, t::TreapNode{K}, key::K)
@@ -62,7 +77,12 @@ end
 function remove!{K}(treap::Treap, t::TreapNode{K}, key::K)
 	isempty(t) && throw(KeyError(key))
 	if key == t.key
-		push!(treap.pool, t)
+		# push!(treap.pool, t)
+		treap.poolsize += 1
+		if treap.poolsize > length(treap.pool)
+			resize!(treap.pool, treap.poolsize * 2)
+		end
+		treap.pool[treap.poolsize] = t
 		merge!(t.left, t.right)
 	elseif key < t.key
 		t.left = remove!(treap, t.left, key)
@@ -111,15 +131,6 @@ end
 
 ### --- ###
 
-function newnode{K}(treap::Treap{K})
-	if length(treap.pool) > 0
-		node = pop!(treap.pool)
-		node.priority = inf(PriorityT)
-		node
-	else
-		TreapNode{K}()
-	end
-end
 add!{K}(t::Treap{K}, key::K) = t.root = add!(t, t.root, key)
 remove!{K}(t::Treap{K}, key::K) = t.root = remove!(t, t.root, key)
 show(io::IO, t::Treap) = show(io, t.root)
