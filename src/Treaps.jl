@@ -12,7 +12,6 @@ type TreapNode{K}
 	left::TreapNode{K}
 	right::TreapNode{K}
 	TreapNode(key, priority, left, right) = new(priority, key, left, right)
-	TreapNode(key) = new(rand(PriorityT), key, TreapNode{K}(), TreapNode{K}())
 	TreapNode() = new(inf(PriorityT))
 end
 show(io::IO, t::TreapNode) = show(io, "Key: $(t.key), Priority: $(t.priority)")
