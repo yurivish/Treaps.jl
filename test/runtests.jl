@@ -44,6 +44,8 @@ Base.rand{T}(::Type{Vec3{T}}) = Vec3(rand(T), rand(T), rand(T))
 <(a::Vec3, b::Vec3) = shuffless(a, b)
 
 function benchmark_treap(numelements, numqueries)
+	const check_correctness = true
+
 	for i in 1:10
 		arr = unique([rand(Vec3{Uint8}) for i in 1:numelements])
 		t = Treap{Vec3{Uint8}}()
@@ -53,22 +55,25 @@ function benchmark_treap(numelements, numqueries)
 
 		queries = [rand(Vec3{Uint8}) for i in 1:numqueries]
 
+		check_correctness && preprocess!(arr)
 		@time for q in queries
 			result = nearest(t, q)
-			# result_sqdist = LowDimNearestNeighbors.sqdist(q, result)
+			if check_correctness
+				result_sqdist = LowDimNearestNeighbors.sqdist(q, result)
 
-			# correct_result = nearest(arr, q)
-			# correct_sqdist = LowDimNearestNeighbors.sqdist(q, correct_result)
+				correct_result = nearest(arr, q)
+				correct_sqdist = LowDimNearestNeighbors.sqdist(q, correct_result)
 
-			# if result_sqdist != correct_sqdist
-			# 	result_dist = sqrt(result_sqdist)
-			# 	correct_dist = sqrt(correct_sqdist)
-			# 	println("Mismatch when searching for ", q, ":")
-			# 	println("\t Result: ", result, "\t", result_dist)
-			# 	println("\tCorrect: ", correct_result, "\t", correct_dist)
-			# 	println("\t% error: ", 100 * (1 - correct_dist / result_dist), "%")
-			# 	println()
-			# end
+				if result_sqdist != correct_sqdist
+					result_dist = sqrt(result_sqdist)
+					correct_dist = sqrt(correct_sqdist)
+					println("Mismatch when searching for ", q, ":")
+					println("\t Result: ", result, "\t", result_dist)
+					println("\tCorrect: ", correct_result, "\t", correct_dist)
+					println("\t% error: ", 100 * (1 - correct_dist / result_dist), "%")
+					println()
+				end
+			end
 		end
 	end
 end
