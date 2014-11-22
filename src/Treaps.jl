@@ -1,6 +1,6 @@
 module Treaps
 
-import Base: show, isempty, minimum, maximum, length, in
+import Base: show, isempty, minimum, maximum, in
 
 export Treap, TreapNode, show, isempty, add!, remove!, minimum, maximum, left, right, key, root
 
@@ -21,42 +21,21 @@ key(t::TreapNode) = t.key
 left(t::TreapNode) = t.left
 right(t::TreapNode) = t.right
 
-type Treap{K}
-	root::TreapNode{K}
-	pool::Vector{TreapNode{K}}
-	poolsize::Int
-	function Treap()
-		pool = Array(TreapNode{K}, 2000)
-		new(TreapNode{K}(), pool, 0)
-	end
-end
-
-function newnode{K}(treap::Treap{K})
-	if treap.poolsize > 0
-		node = treap.pool[treap.poolsize]
-		node.priority = inf(PriorityT)
-		treap.poolsize -= 1
-		node
-	else
-		TreapNode{K}()
-	end
-end
-
-function add!{K}(treap::Treap, t::TreapNode{K}, key::K)
+function add!{K}(t::TreapNode{K}, key::K)
 	if isempty(t)
 		t.key = key
 		t.priority = rand(PriorityT)
-		t.left = newnode(treap)  # TreapNode{K}()
-		t.right = newnode(treap) # TreapNode{K}()
+		t.left = TreapNode{K}()
+		t.right = TreapNode{K}()
 		return t
 	end
 
 	if key < t.key
-		t.left = add!(treap, t.left, key)
+		t.left = add!(t.left, key)
 		t.left.priority < t.priority ? rotate_right!(t) : t
 	else
 		@assert t.key < key "A treap may not contain duplicate keys: $key, $(t.key)"
-		t.right = add!(treap, t.right, key)
+		t.right = add!(t.right, key)
 		t.right.priority < t.priority ? rotate_left!(t) : t
 	end
 end
@@ -74,21 +53,15 @@ function merge!{K}(left::TreapNode{K}, right::TreapNode{K})
 	result
 end
 
-function remove!{K}(treap::Treap, t::TreapNode{K}, key::K)
+function remove!{K}(t::TreapNode{K}, key::K)
 	isempty(t) && throw(KeyError(key))
 	if key == t.key
-		# push!(treap.pool, t)
-		treap.poolsize += 1
-		if treap.poolsize > length(treap.pool)
-			resize!(treap.pool, treap.poolsize * 2)
-		end
-		treap.pool[treap.poolsize] = t
 		merge!(t.left, t.right)
 	elseif key < t.key
-		t.left = remove!(treap, t.left, key)
+		t.left = remove!(t.left, key)
 		t.left.priority < t.priority ? rotate_right!(t) : t
 	else
-		t.right = remove!(treap, t.right, key)
+		t.right = remove!(t.right, key)
 		t.right.priority < t.priority ? rotate_left!(t) : t
 	end
 end
@@ -129,10 +102,12 @@ function rotate_left!(root::TreapNode)
 	newroot
 end
 
-### --- ###
-
-add!{K}(t::Treap{K}, key::K) = t.root = add!(t, t.root, key)
-remove!{K}(t::Treap{K}, key::K) = t.root = remove!(t, t.root, key)
+type Treap{K}
+	root::TreapNode{K}
+	Treap() = new(TreapNode{K}())
+end
+add!{K}(t::Treap{K}, key::K) = t.root = add!(t.root, key)
+remove!{K}(t::Treap{K}, key::K) = t.root = remove!(t.root, key)
 show(io::IO, t::Treap) = show(io, t.root)
 isempty(t::Treap) = isempty(t.root)
 length(t::Treap) = length(t.root)
