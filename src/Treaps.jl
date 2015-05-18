@@ -12,10 +12,10 @@ type TreapNode{K}
 	left::TreapNode{K}
 	right::TreapNode{K}
 	TreapNode(key, priority, left, right) = new(priority, key, left, right)
-	TreapNode() = new(inf(PriorityT))
+	TreapNode() = new(convert(PriorityT, Inf))
 end
 show(io::IO, t::TreapNode) = show(io, "Key: $(t.key), Priority: $(t.priority)")
-isempty(t::TreapNode) = t.priority == inf(PriorityT)
+isempty(t::TreapNode) = t.priority == convert(PriorityT, Inf)
 
 key(t::TreapNode) = t.key
 left(t::TreapNode) = t.left

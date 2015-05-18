@@ -47,13 +47,13 @@ function benchmark_treap(numelements, numqueries)
 	const check_correctness = false
 
 	for i in 1:10
-		arr = unique([rand(Vec3{Uint8}) for i in 1:numelements])
-		t = Treap{Vec3{Uint8}}()
+		arr = unique([rand(Vec3{UInt8}) for i in 1:numelements])
+		t = Treap{Vec3{UInt8}}()
 		for v in arr
 			add!(t, v)
 		end
 
-		queries = [rand(Vec3{Uint8}) for i in 1:numqueries]
+		queries = [rand(Vec3{UInt8}) for i in 1:numqueries]
 
 		check_correctness && preprocess!(arr)
 		@time for q in queries
