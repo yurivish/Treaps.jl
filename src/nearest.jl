@@ -30,10 +30,11 @@ if Pkg.installed("LowDimNearestNeighbors") != nothing
 		R
 	end
 
-	function nearest{P, Q}(t::TreapNode{P}, q::Q, ε=0.0)
+	function nearest_result{P, Q}(t::TreapNode{P}, q::Q, ε=0.0)
 		@assert !isempty(t) "Searching for the nearest in an empty treap"
-		nearest(t, q, Result{P, Q}(key(t)), ε).point
+		nearest(t, q, Result{P, Q}(key(t)), ε)
 	end
 
+	nearest{P, Q}(t::TreapNode{P}, q::Q, ε=0.0) = nearest_result(t, q, ε).point
 	nearest{P, Q}(t::Treap{P}, q::Q, ε=0.0) = nearest(root(t), q, ε)
 end
