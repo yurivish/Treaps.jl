@@ -5,7 +5,7 @@
 
 if Pkg.installed("LowDimNearestNeighbors") != nothing
 	import LowDimNearestNeighbors: shuffless, shuffmore, nearest, Result, sqdist, sqdist_to_quadtree_box
-	export nearest
+	export nearest, nearest_result
 
 	function nearest{P, Q}(t::TreapNode{P}, q::Q, R::Result{P, Q}, ε::Float64)
 		isempty(t) && return R
