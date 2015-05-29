@@ -4,7 +4,7 @@
 # The code follows the shape of the array version in LowDimNearestNeighbors.
 
 if Pkg.installed("LowDimNearestNeighbors") != nothing
-	import LowDimNearestNeighbors: shuffless, shuffmore, nearest, Result, sqdist, sqdist_to_quadtree_box
+	import LowDimNearestNeighbors: shuffless, shuffmore, nearest, nearest_result, Result, sqdist, sqdist_to_quadtree_box
 	export nearest, nearest_result
 
 	function nearest{P, Q}(t::TreapNode{P}, q::Q, R::Result{P, Q}, ε::Float64)
@@ -30,11 +30,12 @@ if Pkg.installed("LowDimNearestNeighbors") != nothing
 		R
 	end
 
+	nearest{P, Q}(t::Treap{P}, q::Q, ε=0.0) = nearest(root(t), q, ε)
+
 	function nearest_result{P, Q}(t::TreapNode{P}, q::Q, ε=0.0)
 		@assert !isempty(t) "Searching for the nearest in an empty treap"
 		nearest(t, q, Result{P, Q}(key(t)), ε)
 	end
 
-	nearest{P, Q}(t::TreapNode{P}, q::Q, ε=0.0) = nearest_result(t, q, ε).point
-	nearest{P, Q}(t::Treap{P}, q::Q, ε=0.0) = nearest(root(t), q, ε)
+	nearest_result{P, Q}(t::Treap{P}, q::Q, ε=0.0) = nearest_result(root(t), q, ε)
 end
