@@ -4,8 +4,8 @@
 # The code follows the shape of the array version in LowDimNearestNeighbors.
 
 if Pkg.installed("LowDimNearestNeighbors") != nothing
-	import LowDimNearestNeighbors: shuffless, shuffmore, nearest, nearest_result, Result, sqdist, sqdist_to_quadtree_box
-	export nearest, nearest_result
+	import LowDimNearestNeighbors: shuffless, shuffmore, nearest, Result, sqdist, sqdist_to_quadtree_box
+	export nearest
 
 	function nearest{P, Q}(t::TreapNode{P}, q::Q, R::Result{P, Q}, ε::Float64)
 		isempty(t) && return R
